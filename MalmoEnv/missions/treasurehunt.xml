@@ -291,6 +291,12 @@
                             
 			</RewardForMissionEnd>
 			<RewardForSendingCommand reward="-0.02"/>
+			<ObservationFromGrid>
+               <Grid name="board">
+                  <min x="-1" y="-1" z="-1" />
+                  <max x="1" y="-1" z="1" />
+               </Grid>
+            </ObservationFromGrid>
 			<VideoProducer want_depth="false">
 				
                 

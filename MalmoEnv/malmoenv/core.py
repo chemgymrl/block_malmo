@@ -211,13 +211,13 @@ class Env:
         # print(etree.tostring(self.xml))
         self.reshape = reshape
         grids = self.xml.findall('.//' + self.ns + 'ObservationFromGrid')
-        assert len(grids) == self.agent_count
-        grid = grids[self.role]
-        # print(etree.tostring(grid))
-        grid_spec = grid.find(self.ns + 'Grid')
-        self.observation_name = grid_spec.attrib["name"]
-        self.grid_min = grid_spec.find(self.ns + 'min').attrib
-        self.grid_max = grid_spec.find(self.ns + 'max').attrib
+        if len(grids) == self.agent_count:
+            grid = grids[self.role]
+            # print(etree.tostring(grid))
+            grid_spec = grid.find(self.ns + 'Grid')
+            self.observation_name = grid_spec.attrib["name"]
+            self.grid_min = grid_spec.find(self.ns + 'min').attrib
+            self.grid_max = grid_spec.find(self.ns + 'max').attrib
 
         video_producers = self.xml.findall('.//' + self.ns + 'VideoProducer')
         assert len(video_producers) == self.agent_count

@@ -25,6 +25,12 @@
                 <ContinuousMovementCommands/>
                 <MissionQuitCommands/>
                 <ObservationFromFullStats/>
+                <ObservationFromGrid>
+                   <Grid name="board">
+                      <min x="-1" y="-1" z="-1" />
+                      <max x="1" y="-1" z="1" />
+                   </Grid>
+                </ObservationFromGrid>
                 <VideoProducer want_depth="false">
                    <Width>480</Width>
                    <Height>320</Height>
