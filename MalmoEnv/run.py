@@ -68,7 +68,7 @@ if __name__ == '__main__':
             print("reward: " + str(reward))
             # print("done: " + str(done))
             print("obs: " + str(obs))
-            # print("info" + info)
+            print("info" + info)
             if args.saveimagesteps > 0 and steps % args.saveimagesteps == 0:
                 h, w, d = env.observation_space.shape
                 img = Image.fromarray(obs.reshape(h, w, d))

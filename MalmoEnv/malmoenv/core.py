@@ -93,7 +93,7 @@ class Env:
         self.ns = '{http://ProjectMalmo.microsoft.com}'
         self.client_socket = None
         self.server = 'localhost'  # The mission server
-        self.port = 9000  # The mission server port
+        self.port = 10000  # The mission server port
         self.server2 = self.server  # optional server for agent (role <> 0)
         self.port2 = self.port + self.role  # optional server port for agent
         self.resync_period = 0
@@ -208,17 +208,27 @@ class Env:
                                       })
             self.xml.insert(2, e)
 
+        # print(etree.tostring(self.xml))
         self.reshape = reshape
+        grids = self.xml.findall('.//' + self.ns + 'ObservationFromGrid')
+        assert len(grids) == self.agent_count
+        grid = grids[self.role]
+        # print(etree.tostring(grid))
+        grid_spec = grid.find(self.ns + 'Grid')
+        self.observation_name = grid_spec.attrib["name"]
+        self.grid_min = grid_spec.find(self.ns + 'min').attrib
+        self.grid_max = grid_spec.find(self.ns + 'max').attrib
+
         video_producers = self.xml.findall('.//' + self.ns + 'VideoProducer')
         assert len(video_producers) == self.agent_count
         video_producer = video_producers[self.role]
+        # print(etree.tostring(video_producer))
         self.width = int(video_producer.find(self.ns + 'Width').text)
         self.height = int(video_producer.find(self.ns + 'Height').text)
         want_depth = video_producer.attrib["want_depth"]
         self.depth = 4 if want_depth is not None and (want_depth == "true" or want_depth == "1") else 3
         # print(str(self.width) + "x" + str(self.height) + "x" + str(self.depth))
         self.observation_space = VisualObservationSpace(self.width, self.height, self.depth)
-        # print(etree.tostring(self.xml))
 
     @staticmethod
     def _hello(sock):

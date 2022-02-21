@@ -124,9 +124,9 @@
                <Range name="entities" xrange="8" yrange="2" zrange="6" />
             </ObservationFromNearbyEntities>
             <ObservationFromGrid>
-               <Grid absoluteCoords="true" name="board">
-                  <min x="0" y="3" z="0" />
-                  <max x="10" y="3" z="10" />
+               <Grid name="board">
+                  <min x="-1" y="-1" z="-1" />
+                  <max x="1" y="-1" z="1" />
                </Grid>
             </ObservationFromGrid>
             <ObservationFromFullStats />
