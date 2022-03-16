@@ -29,6 +29,8 @@ import uuid
 import gym.spaces
 from malmoenv.comms import retry
 from malmoenv.version import malmo_version
+import gym
+import json
 
 
 class StringActionSpace(gym.spaces.Discrete):
@@ -79,9 +81,10 @@ class MissionInitException(Exception):
 MAX_WAIT = 60 * 3
 
 
-class Env:
+class Env(gym.Env):
     """Malmo "Env" open ai gym compatible environment API"""
     def __init__(self, reshape=False):
+        super(Env, self).__init__()
         self.action_space = None
         self.observation_space = None
         self.metadata = {'render.modes': ['rgb_array']}
@@ -110,7 +113,7 @@ class Env:
     def init(self, xml, port, server=None,
              server2=None, port2=None,
              role=0, exp_uid=None, episode=0,
-             action_filter=None, resync=0, step_options=0, action_space=None, reshape=False):
+             action_filter=None, resync=0, step_options=0, action_space=None, reshape=True):
         """"Initialize a Malmo environment.
             xml - the mission xml.
             port - the MalmoEnv service's port.
@@ -124,6 +127,7 @@ class Env:
             step_options - encodes withTurnKey and withInfo in step messages. Defaults to info included,
             turn if required.
         """
+
         if action_filter is None:
             action_filter = {"move", "turn", "use", "attack"}
 
@@ -216,6 +220,12 @@ class Env:
         self.height = int(video_producer.find(self.ns + 'Height').text)
         want_depth = video_producer.attrib["want_depth"]
         self.depth = 4 if want_depth is not None and (want_depth == "true" or want_depth == "1") else 3
+        gridObs = self.xml.findall('.//' + self.ns + 'ObservationFromGrid')[self.role]
+        grid = gridObs.findall('.//' + self.ns + 'Grid')[self.role]
+        minX = grid.findall('.//' + self.ns + 'min')[self.role]
+        maxX = grid.findall('.//' + self.ns + 'max')[self.role]
+        obsSpace = (int(maxX.attrib["x"]) - int(minX.attrib["x"])) * (int(maxX.attrib["y"]) - int(minX.attrib["y"])) * (int(maxX.attrib["z"]) - int(minX.attrib["z"]))
+        
         # print(str(self.width) + "x" + str(self.height) + "x" + str(self.depth))
         self.observation_space = VisualObservationSpace(self.width, self.height, self.depth)
         # print(etree.tostring(self.xml))
@@ -279,6 +289,7 @@ class Env:
                 obs = np.zeros(self.height * self.width * self.depth, dtype=np.uint8)
         elif self.reshape:
             obs = obs.reshape((self.height, self.width, self.depth)).astype(np.uint8)
+        
         self.last_obs = obs
         return obs
 
@@ -347,7 +358,11 @@ class Env:
             else:
                 obs = obs.reshape((self.height, self.width, self.depth)).astype(np.uint8)
         self.last_obs = obs
-
+        if len(info) != 0:
+            info = json.loads(info)
+            info["episode"] = self.resets
+        else:
+            info = {"episode": self.resets}
         return obs, reward, self.done, info
 
     def close(self):

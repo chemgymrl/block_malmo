@@ -60,6 +60,12 @@
         <Height>240</Height>
       </VideoProducer>
       <ObservationFromFullStats />
+      <ObservationFromGrid>
+        <Grid name="board">
+          <min x="-1" y="0" z="-1"/>
+          <max x="1" y="0" z="1"/>
+        </Grid>
+      </ObservationFromGrid>
       <ContinuousMovementCommands turnSpeedDegs="180">
         <ModifierList type="allow-list">
           <command>move</command>
@@ -73,10 +79,10 @@
         <Reward description="out_of_time" reward="-0.1" />
       </RewardForMissionEnd>
       <RewardForTouchingBlockType>
-        <Block type="gold_ore diamond_ore redstone_ore" reward="0.5" />
+        <Block type="wood" reward="-0.5" />
       </RewardForTouchingBlockType>
       <AgentQuitFromTouchingBlockType>
-        <Block type="gold_block diamond_block redstone_block" description="found_goal" />
+        <Block type="sand" description="found_goal" />
       </AgentQuitFromTouchingBlockType>
       <AgentQuitFromReachingCommandQuota description="command_quota_reached" total="1000"/>
     </AgentHandlers>
