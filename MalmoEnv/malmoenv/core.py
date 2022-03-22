@@ -226,7 +226,7 @@ class Env(gym.Env):
         maxX = grid.findall('.//' + self.ns + 'max')[self.role]
         obsSpace = (int(maxX.attrib["x"]) - int(minX.attrib["x"])) * (int(maxX.attrib["y"]) - int(minX.attrib["y"])) * (int(maxX.attrib["z"]) - int(minX.attrib["z"]))
         
-        # print(str(self.width) + "x" + str(self.height) + "x" + str(self.depth))
+        print(str(self.width) + "x" + str(self.height) + "x" + str(self.depth))
         self.observation_space = VisualObservationSpace(self.width, self.height, self.depth)
         # print(etree.tostring(self.xml))
 

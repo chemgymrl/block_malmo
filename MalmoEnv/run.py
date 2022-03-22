@@ -111,7 +111,7 @@ if __name__ == '__main__':
              episode=args.episode, resync=args.resync)
 
     env = Monitor(env, log_dir)
-    # check_env(env, True)
+    check_env(env, True)
 
     model = PPO("MlpPolicy", env, verbose=1)
     model.learn(total_timesteps=10)
