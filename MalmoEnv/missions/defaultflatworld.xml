@@ -14,9 +14,9 @@
     <ServerInitialConditions>
             <Time>
                 <StartTime>6000</StartTime>
-                <AllowPassageOfTime>true</AllowPassageOfTime>
+                <AllowPassageOfTime>false</AllowPassageOfTime>
             </Time>
-            <Weather>rain</Weather>
+            <Weather>clear</Weather>
             <AllowSpawning>true</AllowSpawning>
     </ServerInitialConditions>
     <ServerHandlers>
@@ -58,16 +58,31 @@
   <AgentSection mode="Survival">
     <Name>Agent0</Name>
     <AgentStart>
-      <Placement pitch="0" x="0.5" y="227.0" yaw="0" z="0.5"/>
+      <Placement pitch="0" x="19.5" y="227.0" yaw="0" z="0.5"/>
     </AgentStart>
     <AgentHandlers>
-      <ContinuousMovementCommands turnSpeedDegs="180"/>
+      <ContinuousMovementCommands turnSpeedDegs="180">
+        <ModifierList type="allow-list">
+          <command>move</command>
+          <command>turn</command>
+          <command>jump</command>
+        </ModifierList>
+      </ContinuousMovementCommands>
       <MissionQuitCommands/>
       <ObservationFromFullStats/>
       <VideoProducer want_depth="false">
         <Width>320</Width>
         <Height>240</Height>
       </VideoProducer>
+      <ObservationFromGrid>
+        <Grid name="board">
+          <min x="-3" y="-1" z="-3"/>
+          <max x="3" y="1" z="3"/>
+        </Grid>
+      </ObservationFromGrid>
+      <RewardForTouchingBlockType>
+        <Block type="air" reward="-0.5" />
+      </RewardForTouchingBlockType>
       <RewardForReachingPosition>
         <Marker oneshot="true" reward="100" tolerance="1.100000023841858" x="19.5" y="227" z="19.5"/>
       </RewardForReachingPosition>      

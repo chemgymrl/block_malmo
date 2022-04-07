@@ -19,7 +19,7 @@
         <AgentSection mode="Survival">
             <Name>Agent0</Name>
             <AgentStart>
-                  <Placement x="-203.5" y="81.0" z="217.5"/>
+                  <Placement x="5.5" y="81.0" z="217.5"/>
             </AgentStart>
             <AgentHandlers>
                 <ContinuousMovementCommands/>
@@ -29,6 +29,13 @@
                    <Width>480</Width>
                    <Height>320</Height>
                 </VideoProducer>
+                <ObservationFromGrid>
+                    <Grid name="board">
+                      <min x="-2" y="-1" z="-2"/>
+                      <max x="2" y="1" z="2"/>
+                    </Grid>
+                </ObservationFromGrid>
+
                 <RewardForMissionEnd rewardForDeath="-10000">
                     <Reward description="found_goal" reward="1000" />
                     <Reward description="out_of_time" reward="-1000" />

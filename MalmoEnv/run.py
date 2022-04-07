@@ -50,10 +50,10 @@ class SaveOnBestTrainingRewardCallback(BaseCallback):
         self.save_path = os.path.join(log_dir, 'best_model')
         self.best_mean_reward = -np.inf
 
-    def _init_callback(self) -> None:
-        # Create folder if needed
-        if self.save_path is not None:
-            os.makedirs(self.save_path, exist_ok=True)
+    # def _init_callback(self) -> None:
+    #     # # Create folder if needed
+    #     # if self.save_path is not None:
+    #     #     os.makedirs(self.save_path, exist_ok=True)
 
     def _on_step(self) -> bool:
         if self.n_calls % self.check_freq == 0:
@@ -83,12 +83,12 @@ os.makedirs(log_dir, exist_ok=True)
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='malmovnv test')
-    parser.add_argument('--mission', type=str, default='missions/findthegoal.xml', help='the mission xml')
+    parser.add_argument('--mission', type=str, default='missions/cliffwalking.xml', help='the mission xml')
     parser.add_argument('--port', type=int, default=9000, help='the mission server port')
     parser.add_argument('--server', type=str, default='127.0.0.1', help='the mission server DNS or IP address')
     parser.add_argument('--port2', type=int, default=None, help="(Multi-agent) role N's mission port. Defaults to server port.")
     parser.add_argument('--server2', type=str, default=None, help="(Multi-agent) role N's server DNS or IP")
-    parser.add_argument('--episodes', type=int, default=1, help='the number of resets to perform - default is 1')
+    parser.add_argument('--episodes', type=int, default=100, help='the number of resets to perform - default is 1')
     parser.add_argument('--episode', type=int, default=0, help='the start episode - default is 0')
     parser.add_argument('--role', type=int, default=0, help='the agent role - defaults to 0')
     parser.add_argument('--episodemaxsteps', type=int, default=0, help='max number of steps per episode')
@@ -110,34 +110,35 @@ if __name__ == '__main__':
              exp_uid=args.experimentUniqueId,
              episode=args.episode, resync=args.resync)
 
+    # bigger area
+    # heading or more info
+    #3;7,220*1,5*3,2;3;,biome_1
+
     env = Monitor(env, log_dir)
+    # print("checking env")
     check_env(env, True)
-
+    s = SaveOnBestTrainingRewardCallback(2000, log_dir)
+    # print("checked env")
     model = PPO("MlpPolicy", env, verbose=1)
-    model.learn(total_timesteps=10)
-    model.save("ppo_minecraft")
-
+    model.load("tmp/best_model.zip")
+    # model.learn(total_timesteps=1000000, callback = s)
+    
+    print("trained and saved model")
     for i in range(args.episodes):
         print("reset " + str(i))
         obs = env.reset()
-        
+    
         steps = 0
         done = False
         while not done and (args.episodemaxsteps <= 0 or steps < args.episodemaxsteps):
-            h, w, d = env.observation_space.shape
-            action, _states = model.predict(obs.reshape(h, w, d), deterministic=True)
+            # h, w, d = env.observation_space.shape
+            action, _states = model.predict(obs, deterministic=True)
             # action = env.action_space.sample()
             obs, reward, done, info = env.step(action)
             steps += 1
             # print("reward: " + str(reward))
-            print(type(info))
-            # print("obs: " + str(obs))
-            # print("info" + info)
-            # if args.saveimagesteps > 0 and steps % args.saveimagesteps == 0:
-            #     h, w, d = env.observation_space.shape
-            #     img = Image.fromarray(obs.reshape(h, w, d))
-            #     img.save('image' + str(args.role) + '_' + str(steps) + '.png')
-
+            # print(obs)
+    
             time.sleep(.05)
 
     env.close()

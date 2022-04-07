@@ -58,14 +58,9 @@ class ActionSpace(gym.spaces.Discrete):
         return len(self.actions)
 
 
-class VisualObservationSpace(gym.spaces.Box):
-    """Space for visual observations: width x height x depth as a flat array.
-    Where depth is 3 or 4 if encoding scene depth.
-    """
-    def __init__(self, width, height, depth):
-        gym.spaces.Box.__init__(self,
-                                low=np.iinfo(np.uint8).min, high=np.iinfo(np.uint8).max,
-                                shape=(height, width, depth), dtype=np.uint8)
+class VisualObservationSpace(gym.spaces.MultiDiscrete):
+    def __init__(self, size):
+        gym.spaces.MultiDiscrete.__init__(self, [236]*size)
 
 
 class EnvException(Exception):
@@ -220,15 +215,20 @@ class Env(gym.Env):
         self.height = int(video_producer.find(self.ns + 'Height').text)
         want_depth = video_producer.attrib["want_depth"]
         self.depth = 4 if want_depth is not None and (want_depth == "true" or want_depth == "1") else 3
+
+        # todo: wrap this in try+except
         gridObs = self.xml.findall('.//' + self.ns + 'ObservationFromGrid')[self.role]
         grid = gridObs.findall('.//' + self.ns + 'Grid')[self.role]
         minX = grid.findall('.//' + self.ns + 'min')[self.role]
         maxX = grid.findall('.//' + self.ns + 'max')[self.role]
-        obsSpace = (int(maxX.attrib["x"]) - int(minX.attrib["x"])) * (int(maxX.attrib["y"]) - int(minX.attrib["y"])) * (int(maxX.attrib["z"]) - int(minX.attrib["z"]))
-        
-        print(str(self.width) + "x" + str(self.height) + "x" + str(self.depth))
-        self.observation_space = VisualObservationSpace(self.width, self.height, self.depth)
+        self.obsSpace = max(1, (int(maxX.attrib["x"]) - int(minX.attrib["x"])) + 1) * max(1, (int(maxX.attrib["y"]) - int(minX.attrib["y"])) + 1) * max(1, (int(maxX.attrib["z"]) - int(minX.attrib["z"])) + 1)
+        # print(str(self.width) + "x" + str(self.height) + "x" + str(self.depth))
+        self.observation_space = VisualObservationSpace(self.obsSpace)
         # print(etree.tostring(self.xml))
+
+        materials = "air, stone, grass, dirt, cobblestone, planks, sapling, bedrock, flowing_water, water, flowing_lava, lava, sand, gravel, gold_ore, iron_ore, coal_ore, log, leaves, sponge, glass, lapis_ore, lapis_block, dispenser, sandstone, noteblock, bed, golden_rail, detector_rail, sticky_piston, web, tallgrass, deadbush, piston, piston_head, wool, piston_extension, yellow_flower, red_flower, brown_mushroom, red_mushroom, gold_block, iron_block, double_stone_slab, stone_slab, brick_block, tnt, bookshelf, mossy_cobblestone, obsidian, torch, fire, mob_spawner, oak_stairs, chest, redstone_wire, diamond_ore, diamond_block, crafting_table, wheat, farmland, furnace, lit_furnace, standing_sign, wooden_door, ladder, rail, stone_stairs, wall_sign, lever, stone_pressure_plate, iron_door, wooden_pressure_plate, redstone_ore, lit_redstone_ore, unlit_redstone_torch, redstone_torch, stone_button, snow_layer, ice, snow, cactus, clay, reeds, jukebox, fence, pumpkin, netherrack, soul_sand, glowstone, portal, lit_pumpkin, cake, unpowered_repeater, powered_repeater, stained_glass, trapdoor, monster_egg, stonebrick, brown_mushroom_block, red_mushroom_block, iron_bars, glass_pane, melon_block, pumpkin_stem, melon_stem, vine, fence_gate, brick_stairs, stone_brick_stairs, mycelium, waterlily, nether_brick, nether_brick_fence, nether_brick_stairs, nether_wart, enchanting_table, brewing_stand, cauldron, end_portal, end_portal_frame, end_stone, dragon_egg, redstone_lamp, lit_redstone_lamp, double_wooden_slab, wooden_slab, cocoa, sandstone_stairs, emerald_ore, ender_chest, tripwire_hook, tripwire, emerald_block, spruce_stairs, birch_stairs, jungle_stairs, command_block, beacon, cobblestone_wall, flower_pot, carrots, potatoes, wooden_button, skull, anvil, trapped_chest, light_weighted_pressure_plate, heavy_weighted_pressure_plate, unpowered_comparator, powered_comparator, daylight_detector, redstone_block, quartz_ore, hopper, quartz_block, quartz_stairs, activator_rail, dropper, stained_hardened_clay, stained_glass_pane, leaves2, log2, acacia_stairs, dark_oak_stairs, slime, barrier, iron_trapdoor, prismarine, sea_lantern, hay_block, carpet, hardened_clay, coal_block, packed_ice, double_plant, standing_banner, wall_banner, daylight_detector_inverted, red_sandstone, red_sandstone_stairs, double_stone_slab2, stone_slab2, spruce_fence_gate, birch_fence_gate, jungle_fence_gate, dark_oak_fence_gate, acacia_fence_gate, spruce_fence, birch_fence, jungle_fence, dark_oak_fence, acacia_fence, spruce_door, birch_door, jungle_door, acacia_door, dark_oak_door, end_rod, chorus_plant, chorus_flower, purpur_block, purpur_pillar, purpur_stairs, purpur_double_slab, purpur_slab, end_bricks, beetroots, grass_path, end_gateway, repeating_command_block, chain_command_block, frosted_ice, magma, nether_wart_block, red_nether_brick, bone_block, structure_void, observer, white_shulker_box, orange_shulker_box, magenta_shulker_box, light_blue_shulker_box, yellow_shulker_box, lime_shulker_box, pink_shulker_box, gray_shulker_box, silver_shulker_box, cyan_shulker_box, purple_shulker_box, blue_shulker_box, brown_shulker_box, green_shulker_box, red_shulker_box, black_shulker_box, structure_block"
+        material_list = materials.split(", ")
+        self.material_dict = {k: v for v, k in enumerate(material_list)}
 
     @staticmethod
     def _hello(sock):
@@ -263,6 +263,13 @@ class Env(gym.Env):
         self.done = False
         return self._peek_obs()
 
+    def _convertInfo(self, materials):
+        assert(len(materials) == self.obsSpace)
+        a = []
+        for i in materials:
+            a.append(self.material_dict[i])
+        return a
+
     def _peek_obs(self):
         obs = None
         start_time = time.time()
@@ -291,7 +298,7 @@ class Env(gym.Env):
             obs = obs.reshape((self.height, self.width, self.depth)).astype(np.uint8)
         
         self.last_obs = obs
-        return obs
+        return np.array([0]*self.obsSpace)
 
     def _quit_episode(self):
         comms.send_message(self.client_socket, "<Quit/>".encode())
@@ -360,10 +367,16 @@ class Env(gym.Env):
         self.last_obs = obs
         if len(info) != 0:
             info = json.loads(info)
-            info["episode"] = self.resets
+            info["episode"] = {"r": reward, "l": self.resets} # todo: change to rew_mean and len_mean
+            if "board" not in info:
+                info["board"] = [0]*self.obsSpace
+            else:
+                print(info["board"])
+                info["board"] = self._convertInfo(info["board"])
+                print(info["board"])
         else:
-            info = {"episode": self.resets}
-        return obs, reward, self.done, info
+            info = {"episode": {"r": self.resets, "l": self.resets}, "board": [0]*self.obsSpace}
+        return np.array(info["board"]), reward, self.done, info
 
     def close(self):
         """gym api close"""
