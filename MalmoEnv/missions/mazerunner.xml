@@ -1,12 +1,13 @@
-<Mission xmlns="http://ProjectMalmo.microsoft.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<Mission
+    xmlns="http://ProjectMalmo.microsoft.com"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <About>
         <Summary>Run the maze!</Summary>
     </About>
     <ModSettings>
         <MsPerTick> 50 </MsPerTick>
         <PrioritiseOffscreenRendering>false</PrioritiseOffscreenRendering>
-    </ModSettings>    
-
+    </ModSettings>
     <ServerSection>
         <ServerInitialConditions>
             <AllowSpawning>false</AllowSpawning>
@@ -38,15 +39,22 @@
         </AgentStart>
         <AgentHandlers>
             <VideoProducer want_depth="false">
-               <Width>320</Width>
-               <Height>240</Height>
-             </VideoProducer>
+                <Width>320</Width>
+                <Height>240</Height>
+            </VideoProducer>
+            <ObservationFromGrid>
+                <Grid name="board">
+                    <min x="-1" y="-1" z="-1"/>
+                    <max x="1" y="1" z="1"/>
+                </Grid>
+            </ObservationFromGrid>
             <ContinuousMovementCommands turnSpeedDegs="840">
-                <ModifierList type="deny-list"> <!-- Example deny-list: prevent agent from strafing -->
+                <ModifierList type="deny-list">
+                    <!-- Example deny-list: prevent agent from strafing -->
                     <command>strafe</command>
                 </ModifierList>
             </ContinuousMovementCommands>
             <MissionQuitCommands/>
-            </AgentHandlers>
+        </AgentHandlers>
     </AgentSection>
-</Mission>    
+</Mission>

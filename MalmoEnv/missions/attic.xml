@@ -61,6 +61,12 @@
         <Height>240</Height>
       </VideoProducer>
       <ObservationFromFullStats />
+      <ObservationFromGrid>
+        <Grid name="board">
+          <min x="-1" y="-1" z="-1"/>
+          <max x="1" y="1" z="1"/>
+        </Grid>
+      </ObservationFromGrid>
       <ContinuousMovementCommands turnSpeedDegs="180">
         <ModifierList type="deny-list">
           <command>attack</command>

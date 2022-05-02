@@ -51,18 +51,18 @@
           </ModifierList>
       </DiscreteMovementCommands>
       <ObservationFromGrid>
-        <Grid absoluteCoords="true" name="board">
-          <min x="-1" y="0" z="-1"/>
-          <max x="1" y="0" z="1"/>
+        <Grid name="board">
+          <min x="-1" y="-1" z="-1"/>
+          <max x="1" y="1" z="1"/>
         </Grid>
       </ObservationFromGrid>
       <MissionQuitCommands/>
       <RewardForTouchingBlockType>
-        <Block type="air" reward="-5" />
-        <Block reward="-100.0" type="lava" behaviour="onceOnly"/>
-        <Block reward="100.0" type="lapis_block" behaviour="onceOnly"/>
+        <Block type="air" reward="-50" />
+        <Block reward="-10000.0" type="lava" behaviour="onceOnly"/>
+        <Block reward="10000.0" type="lapis_block" behaviour="onceOnly"/>
       </RewardForTouchingBlockType>
-      <!--RewardForSendingCommand reward="-1"/-->
+      <!-- <RewardForSendingCommand reward="-1"> -->
       <AgentQuitFromTouchingBlockType>
           <Block type="lava" description="drowned_in_lava"/>
           <Block type="lapis_block" description="found_goal"/>

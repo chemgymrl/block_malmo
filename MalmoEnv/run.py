@@ -24,7 +24,6 @@ import argparse
 from pathlib import Path
 import time
 from PIL import Image
-from stable_baselines3 import PPO
 
 from stable_baselines3.common import results_plotter
 from stable_baselines3.common.monitor import Monitor
@@ -32,6 +31,8 @@ from stable_baselines3.common.results_plotter import load_results, ts2xy, plot_r
 from stable_baselines3.common.noise import NormalActionNoise
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.env_checker import check_env
+
+from stable_baselines3 import PPO
 
 class SaveOnBestTrainingRewardCallback(BaseCallback):
     """
@@ -83,15 +84,15 @@ os.makedirs(log_dir, exist_ok=True)
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='malmovnv test')
-    parser.add_argument('--mission', type=str, default='missions/cliffwalking.xml', help='the mission xml')
-    parser.add_argument('--port', type=int, default=9000, help='the mission server port')
+    parser.add_argument('--mission', type=str, default='missions/default_world.xml', help='the mission xml')
+    parser.add_argument('--port', type=int, default=9002, help='the mission server port')
     parser.add_argument('--server', type=str, default='127.0.0.1', help='the mission server DNS or IP address')
     parser.add_argument('--port2', type=int, default=None, help="(Multi-agent) role N's mission port. Defaults to server port.")
     parser.add_argument('--server2', type=str, default=None, help="(Multi-agent) role N's server DNS or IP")
     parser.add_argument('--episodes', type=int, default=100, help='the number of resets to perform - default is 1')
     parser.add_argument('--episode', type=int, default=0, help='the start episode - default is 0')
     parser.add_argument('--role', type=int, default=0, help='the agent role - defaults to 0')
-    parser.add_argument('--episodemaxsteps', type=int, default=0, help='max number of steps per episode')
+    parser.add_argument('--episodemaxsteps', type=int, default=100, help='max number of steps per episode')
     parser.add_argument('--saveimagesteps', type=int, default=0, help='save an image every N steps')
     parser.add_argument('--resync', type=int, default=0, help='exit and re-sync every N resets'
                                                               ' - default is 0 meaning never.')
@@ -110,35 +111,33 @@ if __name__ == '__main__':
              exp_uid=args.experimentUniqueId,
              episode=args.episode, resync=args.resync)
 
-    # bigger area
-    # heading or more info
-    #3;7,220*1,5*3,2;3;,biome_1
-
     env = Monitor(env, log_dir)
     # print("checking env")
     check_env(env, True)
     s = SaveOnBestTrainingRewardCallback(2000, log_dir)
     # print("checked env")
-    model = PPO("MlpPolicy", env, verbose=1)
+
+    model = PPO("MlpPolicy", env, verbose=1, tensorboard_log="./ppo_wood_tensorboard/")
     model.load("tmp/best_model.zip")
-    # model.learn(total_timesteps=1000000, callback = s)
+    model.learn(total_timesteps=100000, callback=s, reset_num_timesteps=False)
     
-    print("trained and saved model")
-    for i in range(args.episodes):
-        print("reset " + str(i))
-        obs = env.reset()
+    # print("trained and saved model")
+    # for i in range(args.episodes):
+    #     print("reset " + str(i))
+    #     obs = env.reset()
     
-        steps = 0
-        done = False
-        while not done and (args.episodemaxsteps <= 0 or steps < args.episodemaxsteps):
-            # h, w, d = env.observation_space.shape
-            action, _states = model.predict(obs, deterministic=True)
-            # action = env.action_space.sample()
-            obs, reward, done, info = env.step(action)
-            steps += 1
-            # print("reward: " + str(reward))
-            # print(obs)
+    #     steps = 0
+    #     done = False
+    #     while not done and (args.episodemaxsteps <= 0 or steps < args.episodemaxsteps):
+    #         # h, w, d = env.observation_space.shape
+    #         # print(done)
+    #         action, _states = model.predict(obs, deterministic=True)
+    #         # action = env.action_space.sample()
+    #         obs, reward, done, info = env.step(action)
+    #         steps += 1
+    #         # print("reward: " + str(reward))
+    #         # print(obs)
     
-            time.sleep(.05)
+    #         time.sleep(.05)
 
     env.close()

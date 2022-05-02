@@ -24,11 +24,12 @@ import time
 from lxml import etree
 from threading import Thread
 import threading
+from run import SaveOnBestTrainingRewardCallback
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='malmovnv test')
-    parser.add_argument('--mission', type=str, default='missions/mobchase_single_agent.xml', help='the mission xml')
+    parser.add_argument('--mission', type=str, default='missions/buildbattle.xml', help='the mission xml')
     parser.add_argument('--port', type=int, default=9000, help='the mission server port')
     parser.add_argument('--server', type=str, default='127.0.0.1', help='the mission server DNS or IP address')
     parser.add_argument('--server2', type=str, default=None, help="(Multi-agent) role N's server DNS or IP")
@@ -59,23 +60,32 @@ if __name__ == '__main__':
         def log(message):
             print('[' + str(role) + '] ' + message)
 
-        for r in range(args.episodes):
-            log("reset " + str(r))
-            env.reset()
-            steps = 0
+        env = Monitor(env, log_dir)
+        # print("checking env")
+        check_env(env, True)
+        s = SaveOnBestTrainingRewardCallback(2000, log_dir)
+        # print("checked env")
+        model = PPO("MlpPolicy", env, verbose=1)
+        # model.load("tmp/best_model.zip")
+        model.learn(total_timesteps=100000, callback = s)
 
-            done = False
-            while not done:
-                steps += 1
-                action = env.action_space.sample()
-                log(str(steps) + " action: " + str(action))
-                obs, reward, done, info = env.step(action)
-                # log("reward: " + str(reward))
-                # log("done: " + str(done))
-                # log("info: " + str(info))
-                # log(" obs: " + str(obs))
+        # for r in range(args.episodes):
+        #     log("reset " + str(r))
+        #     env.reset()
+        #     steps = 0
 
-                time.sleep(.05)
+        #     done = False
+        #     while not done:
+        #         steps += 1
+        #         action = env.action_space.sample()
+        #         log(str(steps) + " action: " + str(action))
+        #         obs, reward, done, info = env.step(action)
+        #         # log("reward: " + str(reward))
+        #         # log("done: " + str(done))
+        #         # log("info: " + str(info))
+        #         # log(" obs: " + str(obs))
+
+        #         time.sleep(.05)
 
         env.close()
 

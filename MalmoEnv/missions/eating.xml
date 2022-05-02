@@ -439,6 +439,12 @@
           <Height>320</Height>
         </VideoProducer>
         <ObservationFromFullStats />
+        <ObservationFromGrid>
+          <Grid name="board">
+            <min x="-3" y="1" z="-3"/>
+            <max x="3" y="3" z="3"/>
+          </Grid>
+        </ObservationFromGrid>
         <RewardForCollectingItem>
           <Item reward="2" type="fish porkchop beef chicken rabbit mutton"/>
           <Item reward="1" type="potato egg carrot"/>

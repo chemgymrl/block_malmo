@@ -147,20 +147,10 @@
                   
             
 			<ObservationFromGrid>
-				
-                
-				<Grid absoluteCoords="true" name="board">
-					
-                    
-					<min x="-10" y="0" z="-10"/>
-					
-                    
+				<Grid name="board">
+					<min x="-10" y="-2" z="-10"/>
 					<max x="10" y="10" z="10"/>
-					
-                
 				</Grid>
-				
-            
 			</ObservationFromGrid>
 			
             
@@ -228,10 +218,10 @@
 			<ObservationFromGrid>
 				
                 
-				<Grid absoluteCoords="true" name="board">
+				<Grid name="board">
 					
                     
-					<min x="-10" y="0" z="-10"/>
+					<min x="-10" y="-10" z="-10"/>
 					
                     
 					<max x="10" y="10" z="10"/>

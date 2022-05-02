@@ -371,9 +371,7 @@ class Env(gym.Env):
             if "board" not in info:
                 info["board"] = [0]*self.obsSpace
             else:
-                print(info["board"])
                 info["board"] = self._convertInfo(info["board"])
-                print(info["board"])
         else:
             info = {"episode": {"r": self.resets, "l": self.resets}, "board": [0]*self.obsSpace}
         return np.array(info["board"]), reward, self.done, info

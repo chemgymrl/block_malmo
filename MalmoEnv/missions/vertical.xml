@@ -66,6 +66,12 @@
           <command>attack</command>
         </ModifierList>
       </ContinuousMovementCommands>
+      <ObservationFromGrid>
+        <Grid name="board">
+          <min x="-1" y="-1" z="-1"/>
+          <max x="1" y="1" z="1"/>
+        </Grid>
+      </ObservationFromGrid>
       <MissionQuitCommands/>
       <RewardForMissionEnd rewardForDeath="-10000">
         <Reward description="found_goal" reward="8000" />

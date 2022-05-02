@@ -11,7 +11,7 @@
         <ServerSection>
             <ServerHandlers>
                 <DefaultWorldGenerator />
-                <ServerQuitFromTimeUp timeLimitMs="3000000" description="out_of_time"/>
+                <ServerQuitFromTimeUp timeLimitMs="300000" description="out_of_time"/>
                 <ServerQuitWhenAnyAgentFinishes />
             </ServerHandlers>
         </ServerSection>
@@ -20,6 +20,9 @@
             <Name>Agent0</Name>
             <AgentStart>
                   <Placement x="5.5" y="81.0" z="217.5"/>
+                  <Inventory>
+                   <InventoryBlock quantity="10" slot="0" type="diamond_axe" />
+                  </Inventory>
             </AgentStart>
             <AgentHandlers>
                 <ContinuousMovementCommands/>
@@ -31,18 +34,17 @@
                 </VideoProducer>
                 <ObservationFromGrid>
                     <Grid name="board">
-                      <min x="-2" y="-1" z="-2"/>
-                      <max x="2" y="1" z="2"/>
+                      <min x="-1" y="-1" z="-1"/>
+                      <max x="3" y="3" z="3"/>
                     </Grid>
                 </ObservationFromGrid>
-
                 <RewardForMissionEnd rewardForDeath="-10000">
-                    <Reward description="found_goal" reward="1000" />
-                    <Reward description="out_of_time" reward="-1000" />
+                    <Reward description="found_goal" reward="10000" />
+                    <Reward description="out_of_time" reward="-1000000" />
                 </RewardForMissionEnd>
-                <AgentQuitFromTouchingBlockType>
-                    <Block type="gold_block diamond_block redstone_block" description="found_goal" />
-                </AgentQuitFromTouchingBlockType>
+                <AgentQuitFromCollectingItem>
+                  <Item type="log" description="found_goal"/>
+                </AgentQuitFromCollectingItem>
             </AgentHandlers>            
         </AgentSection>
 </Mission>
