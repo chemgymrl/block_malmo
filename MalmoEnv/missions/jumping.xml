@@ -29,7 +29,7 @@
         <DrawCuboid x1="0"  y1="47" z1="0"  x2="4" y2="50" z2="0" type="sandstone" />      <!-- back wall of the arena -->
         <DrawItem    x="3"   y="46"  z="12" type="diamond" />                               <!-- another destination marker -->
       </DrawingDecorator>
-      <ServerQuitFromTimeUp timeLimitMs="20000"/>
+      <ServerQuitFromTimeUp timeLimitMs="20000" description="out_of_time"/>
       <ServerQuitWhenAnyAgentFinishes/>
     </ServerHandlers>
   </ServerSection>
@@ -58,8 +58,8 @@
       </ContinuousMovementCommands>
       <ObservationFromGrid>
         <Grid name="board">
-          <min x="-1" y="-1" z="-1"/>
-          <max x="1" y="1" z="1"/>
+          <min x="-5" y="-1" z="-5"/>
+          <max x="5" y="1" z="5"/>
         </Grid>
       </ObservationFromGrid>
       <MissionQuitCommands/>
@@ -71,6 +71,12 @@
       <AgentQuitFromTouchingBlockType>
           <Block type="lava" description="drowned_in_lava"/>
       </AgentQuitFromTouchingBlockType>
+      <RewardForCollectingItem>
+        <Item reward="100000" type="diamond"/>
+      </RewardForCollectingItem>
+      <RewardForMissionEnd rewardForDeath="-10000">
+        <Reward description="out_of_time" reward="-1000000" />
+      </RewardForMissionEnd>    
       <AgentQuitFromCollectingItem>
         <Item type="diamond" description="found_goal"/>
       </AgentQuitFromCollectingItem>

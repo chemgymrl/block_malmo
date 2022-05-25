@@ -117,9 +117,9 @@ if __name__ == '__main__':
     s = SaveOnBestTrainingRewardCallback(2000, log_dir)
     # print("checked env")
 
-    model = PPO("MlpPolicy", env, verbose=1, tensorboard_log="./ppo_test_tensorboard/")
-    #model.load("tmp/best_model.zip")
-    model.learn(total_timesteps=100000, callback=s, reset_num_timesteps=False)
+    model = PPO("MlpPolicy", env, verbose=1, tensorboard_log="./ppo_jump_tensorboard/")
+    # model.load("tmp/best_model.zip")
+    model.learn(total_timesteps=200000, callback=s, reset_num_timesteps=False)
     
     # print("trained and saved model")
     # for i in range(args.episodes):
