@@ -84,8 +84,8 @@ os.makedirs(log_dir, exist_ok=True)
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='malmovnv test')
-    parser.add_argument('--mission', type=str, default='missions/default_world.xml', help='the mission xml')
-    parser.add_argument('--port', type=int, default=9002, help='the mission server port')
+    parser.add_argument('--mission', type=str, default='missions/jumping.xml', help='the mission xml')
+    parser.add_argument('--port', type=int, default=9000, help='the mission server port')
     parser.add_argument('--server', type=str, default='127.0.0.1', help='the mission server DNS or IP address')
     parser.add_argument('--port2', type=int, default=None, help="(Multi-agent) role N's mission port. Defaults to server port.")
     parser.add_argument('--server2', type=str, default=None, help="(Multi-agent) role N's server DNS or IP")
@@ -117,8 +117,8 @@ if __name__ == '__main__':
     s = SaveOnBestTrainingRewardCallback(2000, log_dir)
     # print("checked env")
 
-    model = PPO("MlpPolicy", env, verbose=1, tensorboard_log="./ppo_wood_tensorboard/")
-    model.load("tmp/best_model.zip")
+    model = PPO("MlpPolicy", env, verbose=1, tensorboard_log="./ppo_test_tensorboard/")
+    #model.load("tmp/best_model.zip")
     model.learn(total_timesteps=100000, callback=s, reset_num_timesteps=False)
     
     # print("trained and saved model")

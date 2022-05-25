@@ -124,7 +124,7 @@ class Env(gym.Env):
         """
 
         if action_filter is None:
-            action_filter = {"move", "turn", "use", "attack"}
+            action_filter = {"move", "turn", "use", "attack", "jump"}
 
         if not xml.startswith('<Mission'):
             i = xml.index("<Mission")
